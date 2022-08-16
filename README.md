@@ -1,1 +1,1 @@
-# leetCode, codwars and interviews Questions
+# LeetCode, codwars and interviews Questions
