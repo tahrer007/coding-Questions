@@ -9,15 +9,13 @@ anagrams('abba', ['aabb', 'abcd', 'bbaa', 'dada']) => ['aabb', 'bbaa']
 anagrams('racer', ['crazer', 'carer', 'racar', 'caers', 'racer']) => ['carer', 'racer']
 anagrams('laser', ['lazing', 'lazy',  'lacer']) => []
 */
-function checkAngram(wordLength, test, wordToCheck) {
-    let chars =test ; 
-  console.log(chars);
+function checkAngram(wordLength, chars, wordToCheck) {
   if (wordLength !== wordToCheck.length) return false;
   for (let i = 0; i < wordToCheck.length; i++) {
     if (wordToCheck[i] in chars) chars[wordToCheck[i]]--;
     else return false;
   }
-  //console.log(chars);
+
   for (const key in chars) {
     if (chars[key]) return false;
   }
@@ -25,19 +23,19 @@ function checkAngram(wordLength, test, wordToCheck) {
 }
 function anagrams(word, words) {
   const arr = [];
-  let obj = {};
+  const obj = {};
   const wordLength = word.length;
 
   for (let i = 0; i < word.length; i++) {
     if (word[i] in obj) obj[word[i]]++;
     else obj[word[i]] = 1;
   }
-  obj
+
   words.forEach((element) => {
-    if (checkAngram(wordLength,obj, element)) arr.push(element);
-    obj
+    const obj2 = { ...obj };
+    if (checkAngram(wordLength, obj2, element)) arr.push(element);
   });
   return arr;
 }
 //anagrams('racer', ['crazer', 'carer', 'racar', 'caers', 'racer']), ['carer', 'racer']
-console.log(anagrams("racer", ["crazer","racer", "carer", "racar", "caers" ]));
+console.log(anagrams("racer", ["crazer", "racer", "carer", "racar", "caers"]));
