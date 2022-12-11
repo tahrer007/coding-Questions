@@ -27,8 +27,9 @@ const dircetions = [
 function correctPathBackTracking(row, col, maze, str, sol) {
   str;
   if (maze[row][col] === USED) return ""; //aleady used
-  if (row === N && col === N) return "";
+  if (row === N - 1 && col === N - 1) return "";
   if (!str) return "";
+
   maze[row][col] = USED;
 
   const char = charsArr.includes(str[0]);
@@ -40,7 +41,7 @@ function correctPathBackTracking(row, col, maze, str, sol) {
       str[0] +
       correctPathBackTracking(
         row + dircetions[index][0],
-        col + dircetions[index][1],
+        col + dircetions[index][1], //TODO:IS LEGAL
         maze,
         str.slice(1)
       )
@@ -57,8 +58,17 @@ function correctPathBackTracking(row, col, maze, str, sol) {
           str.slice(1)
         )
       ) {
-       return sol += charsArr[i];
-        
+        // return sol += charsArr[i];
+
+        return (
+          charsArr[i] +
+          correctPathBackTracking(
+            row + dircetions[i][0],
+            col + dircetions[i][1],
+            maze,
+            str.slice(1)
+          )
+        );
       }
     }
   }
