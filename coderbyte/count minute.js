@@ -18,7 +18,6 @@ str4 = "9:20am-9:43pm";
 str5 = "11:00pm-1:00am";
 
 
-
 function CountingMinutesI(str) {
   const timeArr = str.split("-");
   const day1 = "07 08 1991 ";
@@ -27,7 +26,7 @@ function CountingMinutesI(str) {
   const ampm1 = timeArr[0].slice(-2);
   const ampm2 = timeArr[1].slice(-2);
 
-  if(ampm1 === "am" && ampm2 === "am" || ampm1 === "pm" && ampm2 === "pm"){
+
 
     let from = ` ${day1}${timeArr[0].slice(0, -2)} ${ampm1}`;
      let to = ` ${day1}${timeArr[1].slice(0, -2)} ${ampm2}`;
@@ -43,24 +42,14 @@ function CountingMinutesI(str) {
         date2 = new Date(to);
 
         return (date2 - date1) / 60000 ;
-
     }
 
+ 
     return diffrence ; 
 
   }
 
-  if (ampm1 === "pm" && ampm2 === "am") day2 = "07 09 1991 "
-  else day2 = day1;
 
-  let from = ` ${day1}${timeArr[0].slice(0, -2)} ${ampm1}`;
-  let to = ` ${day2}${timeArr[1].slice(0, -2)} ${ampm2}`;
-
-  let date1 = new Date(from);
-  let date2 = new Date(to);
-
-  return (date2 - date1) / 60000;
-}
 
 console.log(CountingMinutesI(str1)); //60
 console.log(CountingMinutesI(str2));//107
