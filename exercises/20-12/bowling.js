@@ -1,7 +1,11 @@
 //https://exercism.org/tracks/javascript/exercises/bowling
+
 //bowling
-const FRAMES = 3;
+const FRAMES = 10;
 const PINS = 10;
+const STRIKE = "X";
+const SPARE = "/";
+const NOTPLAYED = "-";
 
 function roll(pins) {
   const min = 0;
@@ -9,75 +13,123 @@ function roll(pins) {
   const num = Math.floor(Math.random() * (max - min + 1) + min);
   return num;
 }
-
+const fillBalls = () => {
+  let score = roll(PINS);
+  if (score === PINS) return 2 * PINS + roll(PINS);
+  return PINS + score;
+};
 function frame() {
-  //first throw
-  let score1 = 10;
-  //let score1 = roll(PINS);
-  if (score === PINS) return { score1, score2: 0 };
-  //2nd throw
-  let score2 = 0;
-  // let score2 = roll(PINS - score);
-  if (score === PINS) return { score1, score2 };
-  return { score1, score2 };
+   let firstThrow = roll(PINS);
+
+  if (firstThrow === PINS)
+    return { firstThrow: STRIKE, secondThrow: NOTPLAYED };
+
+  let secondThrow = roll(PINS - firstThrow);
+
+  if (secondThrow + firstThrow === PINS)
+    return { firstThrow, secondThrow: SPARE };
+  return { firstThrow, secondThrow };
 }
-function score(framesScore) {
+function tenthFrame() {
+  let firstThrow = roll(PINS);
+  if (firstThrow === PINS)
+    return { firstThrow: STRIKE, secondThrow: NOTPLAYED, total: fillBalls() };
+  let secondThrow = roll(PINS - firstThrow);
+  if (secondThrow + firstThrow === PINS)
+    return { firstThrow, secondThrow: SPARE, total: fillBalls() };
+  return { firstThrow, secondThrow, total: firstThrow + secondThrow };
+}
+
+function score(gameScore) {
   let totalScore = 0;
+  console.log(gameScore);
   for (let i = 1; i <= FRAMES; i++) {
-    totalScore += framesScore[i].total;
-    console.log(framesScore[i].total);
+    totalScore += gameScore[i].total;
   }
   return totalScore;
 }
+function updateSpare(i, gameScore) {
+  if (i > 1 && gameScore[i - 1]?.secondThrow === SPARE) {
+    const { firstThrow, secondThrow } = gameScore[i];
+    switch (i) {
+      case FRAMES:
+        gameScore[i - 1].total =
+          Number.isInteger(firstThrow) && Number.isInteger(secondThrow)
+            ? PINS + firstThrow
+            : 2 * PINS;
+        break;
+
+      default:
+        gameScore[i - 1].total =
+          firstThrow === STRIKE ? 2 * PINS : PINS + firstThrow;
+        break;
+    }
+  }
+}
+function updateStrike(i, gameScore) {
+  const { firstThrow, secondThrow } = gameScore[i];
+  if (i > 1 && gameScore[i - 1]?.firstThrow === STRIKE) {
+    let prev = gameScore[i - 1].total;
+    switch (i) {
+      case FRAMES:
+        gameScore[i - 1].total = prev + gameScore[i].total;
+        break;
+
+      default:
+        if (Number.isInteger(firstThrow) && Number.isInteger(secondThrow)) {
+          gameScore[i - 1].total = prev + firstThrow + secondThrow;
+        } else if (secondThrow === SPARE) gameScore[i - 1].total = 2 * PINS;
+        else {
+          gameScore[i - 1].total = 2 * PINS;
+        }
+        break;
+    }
+  }
+  //chek after two striks in row
+  if (
+    i > 2 &&
+    gameScore[i - 1]?.firstThrow === STRIKE &&
+    gameScore[i - 2]?.firstThrow === STRIKE
+  ) {
+    gameScore[i - 2].total =
+      firstThrow === STRIKE ? 3 * PINS : 2 * PINS + firstThrow;
+  }
+}
+
 function game() {
-  let framesCounter = 1;
-  let spareIndex = [];
-  let strikeIndex = new Array(FRAMES).fill(0);
-  let framesScore = new Array(FRAMES + 1);
-  do {
-    let { score1, score2 } = frame();
-    let sum = score1 + score2;
-    framesScore[framesCounter] = {
-      score1,
-      score2,
-      total: sum,
-    };
-    if (sum == PINS) {
-      if (framesCounter !== FRAMES) {
-        console.log(framesCounter);
-        if (!score2) {strikeIndex[framesCounter] = framesCounter + 1 ;
-            strikeIndex;                                                      
-        } else spareIndex.push(framesCounter);
-      } else {
-        //TODO:Fill balls
-        let temp = 0 ; 
-        //if another strike or spare paly another round  
-        
-      }
-      
-    }
-    if (spareIndex.includes(framesCounter - 1)) {
-      let obj = framesScore[framesCounter - 1];
-      obj.total += score1;
-    }
-    if (strikeIndex.includes(framesCounter)) {
-      const index = strikeIndex.indexOf(framesCounter);
-      let obj = framesScore[index];
-      if (!score2) {
-        obj.total += 10;
+  const gameScore = [];
+  let framNum = 1;
 
-        if (obj.total === 30) strikeIndex[index] = 0;
-        else strikeIndex[index] = framesCounter + 1;
-      } else {
-        obj.total += sum;
-        strikeIndex[index] = 0;
-      }
+  for (let i = framNum; i <= FRAMES; i++) {
+    let result;
+    //add frame throw results
+    switch (i) {
+      case FRAMES:
+        result = tenthFrame();
+        gameScore[i] = result;
+        break;
+
+      default:
+        result = frame();
+        const { firstThrow, secondThrow } = result;
+        if (firstThrow === STRIKE || secondThrow === SPARE)
+          gameScore[i] = { i, firstThrow, secondThrow, total: PINS };
+        else
+          gameScore[i] = {
+            i,
+            firstThrow,
+            secondThrow,
+            total: firstThrow + secondThrow,
+          };
+        break;
     }
 
-    framesCounter++;
-  } while (framesCounter <= FRAMES);
+    //add strick or spare bonous
+    updateSpare(i, gameScore);
+    updateStrike(i, gameScore);
+  }
 
-  return score(framesScore);
+  return score(gameScore);
 }
 
 console.log(game());
