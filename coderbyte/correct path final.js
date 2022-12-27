@@ -23,8 +23,8 @@ const dirIdx = [
 const isLegal = (index) => index >= 0 && index < N;
 
 function recurstionCorrectPath(row, col, maze, str, sol) {
-    row
-    col;
+  row;
+  col;
   if (row === N - 1 && col === N - 1) return true;
   if (maze[row][col]) return false;
   if (!str) return false;
@@ -32,31 +32,30 @@ function recurstionCorrectPath(row, col, maze, str, sol) {
   maze[row][col] = 1;
 
   if (dirChars.includes(str[0])) {
-    console.log("test")
     const [x, y] = dirIdx[dirChars.indexOf(str[0])];
     if (
       isLegal(row + x) &&
       isLegal(col + y) &&
       recurstionCorrectPath(row + x, col + y, maze, str.slice(1), sol)
-    )
-    console.log("char" ,sol)
+    ) {
       sol.push(str[0]);
-    return true;
+      return true;
+    }
   } else {
     for (let i = 0; i < 4; i++) {
       const [x, y] = dirIdx[i];
-      console.log("for" ,x,y)
       if (
-        !isLegal(row + x) &&
-        !isLegal(col + y) &&
+        isLegal(row + x) &&
+        isLegal(col + y) &&
         recurstionCorrectPath(row + x, col + y, maze, str.slice(1), sol)
       ) {
+
+        console.log("before", sol);
         sol.push(dirChars[i]);
-        console.log("?" ,sol)
+        console.log("?", sol);
         return true;
       }
     }
-    
   }
   maze[row][col] = 0;
   return false;
@@ -71,16 +70,15 @@ function CorrectPath(str1) {
   ];
 
   str1;
-  const str =str1.split(""); 
-  str
+  const str = str1.split("");
+  str;
   const sol = [];
-  console.log(dirChars.includes(str1[0]))
-  
- 
-  recurstionCorrectPath(0, 0, maze, str,sol);
+  console.log(dirChars.includes(str1[0]));
+
+  recurstionCorrectPath(0, 0, maze, str, sol);
   maze;
   sol;
-  return sol;
+  return sol.join("");
 }
 
-console.log(CorrectPath("drdruurrdddd"));
+console.log(CorrectPath("???rrurdr?"));
